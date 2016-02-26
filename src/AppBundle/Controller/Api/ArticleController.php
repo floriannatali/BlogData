@@ -92,7 +92,7 @@ class ArticleController extends FOSRestController
             throw $exception;
         }
         catch (\Exception $exception) {
-            //todo log $exception
+            $this->get('logger')->addError($exception->getTraceAsString());
             throw new \Exception('An exception occurred');
         }
     }
