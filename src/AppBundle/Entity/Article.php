@@ -93,7 +93,7 @@ class Article
      * @Serializer\Expose
      * @Serializer\Groups(groups={"Article"})
      *
-     * @ORM\Column(type="datetime", nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      *
      */
     private $datePublished;
