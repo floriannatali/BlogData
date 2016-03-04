@@ -11,6 +11,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class ArticleController
@@ -64,9 +65,7 @@ class ArticleController extends FOSRestController
      *     },
      *     parameters={
      *      {"name"="title", "dataType"="string", "required"=true, "description"="article title"},
-     *      {"name"="author", "dataType"="string", "required"=true, "description"="article author"},
-     *      {"name"="content", "dataType"="string", "required"=true, "description"="article content"},
-     *      {"name"="date_creation", "dataType"="datetime", "required"=true, "format"="Y-m-d H:i:s", "description"="article date creation"}
+     *      {"name"="content", "dataType"="string", "required"=true, "description"="article content"}
      *     },
      *     output="AppBundle\Entity\Article"
      * )
@@ -81,6 +80,12 @@ class ArticleController extends FOSRestController
      */
     public function createAction(Request $request)
     {
+
+        if($this->get('app_bundle.token_storage')->getToken()->getClaim('role') != 'w') {
+            throw new AccessDeniedException($this->get('app_bundle.token_storage')->getToken()->getClaim('login') .
+                ': you are not allowed to create an article with "r" (reader) role');
+        }
+
         try {
             $newArticle = $this->get('app_article.article_service')->create(
                 $request->request->all()
@@ -92,6 +97,7 @@ class ArticleController extends FOSRestController
             throw $exception;
         }
         catch (\Exception $exception) {
+            $this->get('logger')->addError($exception->getMessage());
             $this->get('logger')->addError($exception->getTraceAsString());
             throw new \Exception('An exception occurred');
         }

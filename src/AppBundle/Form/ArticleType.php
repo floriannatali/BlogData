@@ -21,12 +21,7 @@ class ArticleType extends AbstractType
         $builder
             ->add('title')
             ->add('content')
-            ->add('author')
-            ->add('date_creation')
-            ->get('date_creation')
-                ->addModelTransformer(new DateTimeToStringTransformer(), true)
             ;
-
     }
 
 

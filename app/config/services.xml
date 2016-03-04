@@ -5,8 +5,35 @@
 
     <services>
         <service id="app_article.article_service" class="AppBundle\Service\ArticleService">
+            <argument type="service" id="app_bundle.token_storage" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="form.factory" />
         </service>
+
+        <service id="app_bundle.jwt_parser" class="Lcobucci\JWT\Parser" public="false">
+        </service>
+
+        <service id="app_bundle.jwt_key" class="Lcobucci\JWT\Signer\Key" public="false">
+            <argument type="string">file://%jwt_public_key_file%</argument>
+        </service>
+
+        <service id="app_bundle.jwt_signer" class="Lcobucci\JWT\Signer\Rsa\Sha256" public="false">
+        </service>
+
+        <service id="app_article.token_service" class="AppBundle\Service\TokenService" public="false">
+            <argument type="service" id="app_bundle.jwt_parser" />
+            <argument type="service" id="app_bundle.jwt_signer" />
+            <argument type="service" id="app_bundle.jwt_key" />
+            <argument type="service" id="app_bundle.token_storage" />
+        </service>
+
+        <service id="app_article.request_listener" class="AppBundle\EventListener\RequestListener">
+            <argument type="service" id="app_article.token_service" />
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
+        </service>
+
+        <service id="app_bundle.token_storage" class="AppBundle\Token\TokenStorage">
+        </service>
+
     </services>
 </container>

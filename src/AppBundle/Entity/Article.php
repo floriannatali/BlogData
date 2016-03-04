@@ -4,7 +4,6 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -19,6 +18,7 @@ class Article
 
     /**
      * Article ID
+     *
      *
      * @var int
      * @Serializer\Expose
@@ -85,18 +85,7 @@ class Article
      *
      */
     private $dateCreation;
-    /**
-     * (nullable) Publish date if published article. Api DateTime format: 'Y-m-d H:i:s'
-     *
-     * @var \DateTime
-     * @Serializer\Type("DateTime<'Y-m-d'>")
-     * @Serializer\Expose
-     * @Serializer\Groups(groups={"Article"})
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     *
-     */
-    private $datePublished;
+
     /**
      * (nullable) Delete date if disabled article. Api DateTime format: 'Y-m-d H:i:s'
      *
@@ -179,22 +168,6 @@ class Article
     public function setDateCreation($dateCreation)
     {
         $this->dateCreation = $dateCreation;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getDatePublished()
-    {
-        return $this->datePublished;
-    }
-
-    /**
-     * @param \DateTime $datePublished
-     */
-    public function setDatePublished($datePublished)
-    {
-        $this->datePublished = $datePublished;
     }
 
     /**

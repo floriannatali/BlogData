@@ -99,6 +99,7 @@ fos_rest:
             'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
             'AppBundle\Exception\InvalidApiFormException': 400
             'Doctrine\ORM\OptimisticLockException': HTTP_CONFLICT
+
             'Exception': 400
         messages:
             'Symfony\Component\Routing\Exception\ResourceNotFoundException': true

@@ -4,6 +4,7 @@ namespace AppBundle\Service;
 use AppBundle\Exception\InvalidApiFormException;
 use AppBundle\Form\ArticleType;
 use AppBundle\Entity\Article;
+use AppBundle\Token\TokenStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Doctrine\ORM\EntityRepository;
@@ -29,8 +30,14 @@ class ArticleService
      */
     protected $formFactory;
 
-    public function __construct(EntityManagerInterface $entityManager, FormFactoryInterface $formFactory)
+    /**
+     * @var TokenStorage
+     */
+    protected $tokenStorage;
+
+    public function __construct(TokenStorage $tokenStorage,EntityManagerInterface $entityManager, FormFactoryInterface $formFactory)
     {
+        $this->tokenStorage = $tokenStorage;
         $this->entityManager = $entityManager;
         $this->repository = $this->entityManager->getRepository('AppBundle\Entity\Article');
         $this->formFactory = $formFactory;
@@ -64,11 +71,12 @@ class ArticleService
      */
     private function processForm(Article $article, array $parameters, $method = "PUT")
     {
+        $article->setAuthor($this->tokenStorage->getToken()->getClaim('firstname') . ' ' . $this->tokenStorage->getToken()->getClaim('lastname'));
+        $article->setDateCreation(new \DateTime());
         unset($parameters['_format']); //fix nelmio todo: trouver mieu
         $form = $this->formFactory->create(ArticleType::class, $article, array('method' => $method, 'csrf_protection'   => false));
         $form->submit($parameters, 'PATCH' !== $method);
         if ($form->isValid()) {
-
             $article = $form->getData();
             $this->entityManager->persist($article);
             $this->entityManager->flush($article);
